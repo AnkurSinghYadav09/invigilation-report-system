@@ -128,8 +128,8 @@ export default function Login() {
                     <div className="mt-4 pt-4 border-t border-gray-200">
                         <p className="text-sm text-gray-600 text-center mb-2">Demo Credentials:</p>
                         <div className="text-xs text-gray-500 space-y-1">
-                            <p><strong>Admin:</strong> admin@university.edu / password</p>
-                            <p><strong>Instructor:</strong> instructor@university.edu / password</p>
+                            <p><strong>Admin:</strong> admin@university.edu / admin123</p>
+                            <p><strong>Instructor:</strong> testing02@newtonschool.co / test123</p>
                         </div>
                     </div>
                 </div>
