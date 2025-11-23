@@ -8,12 +8,30 @@ import Navbar from '../../components/shared/Navbar';
  */
 export default function AdminUsers() {
     const [users, setUsers] = useState([]);
+    const [instructors, setInstructors] = useState([]);
     const [loading, setLoading] = useState(true);
     const [updating, setUpdating] = useState(null);
+    const [showLinkModal, setShowLinkModal] = useState(null);
+    const [selectedInstructor, setSelectedInstructor] = useState('');
 
     useEffect(() => {
         fetchUsers();
+        fetchInstructors();
     }, []);
+
+    const fetchInstructors = async () => {
+        try {
+            const { data, error } = await supabase
+                .from('instructors')
+                .select('id, name, email, department')
+                .order('name');
+
+            if (error) throw error;
+            setInstructors(data || []);
+        } catch (err) {
+            console.error('Error fetching instructors:', err);
+        }
+    };
 
     const fetchUsers = async () => {
         try {
@@ -60,6 +78,31 @@ export default function AdminUsers() {
         } catch (err) {
             console.error('Error updating user role:', err);
             alert(`Failed to update user role: ${err.message}`);
+        } finally {
+            setUpdating(null);
+        }
+    };
+
+    const linkInstructor = async (userId, instructorId) => {
+        try {
+            setUpdating(userId);
+
+            // Update user metadata with instructor_id
+            const { error } = await supabase.rpc('update_user_metadata', {
+                user_id: userId,
+                new_role: 'instructor',
+                new_instructor_id: instructorId
+            });
+
+            if (error) throw error;
+
+            alert('Instructor linked successfully!\n\nUser needs to logout and login again to see their duties.');
+            setShowLinkModal(null);
+            setSelectedInstructor('');
+            await fetchUsers();
+        } catch (err) {
+            console.error('Error linking instructor:', err);
+            alert(`Failed to link instructor: ${err.message}`);
         } finally {
             setUpdating(null);
         }
@@ -223,7 +266,10 @@ export default function AdminUsers() {
                                             )}
                                             {user.role !== 'instructor' && (
                                                 <button
-                                                    onClick={() => updateUserRole(user.id, 'instructor')}
+                                                    onClick={() => {
+                                                        setShowLinkModal(user.id);
+                                                        setSelectedInstructor('');
+                                                    }}
                                                     disabled={updating === user.id}
                                                     className="text-blue-600 hover:text-blue-900 disabled:opacity-50"
                                                 >
@@ -254,12 +300,75 @@ export default function AdminUsers() {
                     <h3 className="font-semibold text-blue-900 mb-2">💡 How User Management Works</h3>
                     <ul className="text-sm text-blue-700 space-y-1">
                         <li>• New signups get <strong>role: pending</strong> automatically</li>
-                        <li>• Click <strong>"Make Admin"</strong> or <strong>"Make Instructor"</strong> to assign a role</li>
+                        <li>• Click <strong>"Make Admin"</strong> to make user an admin</li>
+                        <li>• Click <strong>"Make Instructor"</strong> and select an instructor profile to link</li>
                         <li>• Users must <strong>logout and login again</strong> for the role change to take effect</li>
                         <li>• Deleting a user is permanent and cannot be undone</li>
                     </ul>
                 </div>
             </div>
+
+            {/* Link Instructor Modal */}
+            {showLinkModal && (
+                <div className="fixed inset-0 bg-gray-600 bg-opacity-50 flex items-center justify-center z-50 px-4">
+                    <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
+                        <h3 className="text-xl font-bold text-gray-900 mb-4">
+                            Link Instructor Profile
+                        </h3>
+
+                        <div className="mb-6">
+                            <p className="text-sm text-gray-600 mb-4">
+                                Select an instructor profile to link with this user:
+                            </p>
+
+                            <select
+                                value={selectedInstructor}
+                                onChange={(e) => setSelectedInstructor(e.target.value)}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            >
+                                <option value="">-- Select Instructor --</option>
+                                {instructors.map((instructor) => (
+                                    <option key={instructor.id} value={instructor.id}>
+                                        {instructor.name} ({instructor.email})
+                                    </option>
+                                ))}
+                            </select>
+
+                            {instructors.length === 0 && (
+                                <p className="mt-2 text-sm text-orange-600">
+                                    ⚠️ No instructor profiles found. Please create instructors first in the Instructors page.
+                                </p>
+                            )}
+                        </div>
+
+                        <div className="flex space-x-4">
+                            <button
+                                onClick={() => {
+                                    if (!selectedInstructor) {
+                                        alert('Please select an instructor');
+                                        return;
+                                    }
+                                    linkInstructor(showLinkModal, selectedInstructor);
+                                }}
+                                disabled={!selectedInstructor || updating === showLinkModal}
+                                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                            >
+                                Link Instructor
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowLinkModal(null);
+                                    setSelectedInstructor('');
+                                }}
+                                disabled={updating === showLinkModal}
+                                className="flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }
