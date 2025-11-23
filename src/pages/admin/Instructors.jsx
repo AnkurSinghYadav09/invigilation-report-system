@@ -146,14 +146,14 @@ export default function InstructorsManagement() {
                                         required
                                     >
                                         <option value="">Select Department</option>
-                                        <option value="Computer Science">Computer Science</option>
+                                        <option value="Computer Science">Web Development</option>
                                         <option value="Mathematics">Mathematics</option>
-                                        <option value="Physics">Physics</option>
-                                        <option value="Chemistry">Chemistry</option>
-                                        <option value="Biology">Biology</option>
-                                        <option value="Engineering">Engineering</option>
-                                        <option value="Business">Business</option>
-                                        <option value="Arts">Arts</option>
+                                        <option value="Physics">Robotics</option>
+                                        <option value="Chemistry">AI/ML</option>
+                                        <option value="Biology">D S A</option>
+                                        <option value="Engineering">Non- Acads</option>
+                                        {/* <option value="Business">Business</option> */}
+                                        {/* <option value="Arts">Arts</option> */}
                                         <option value="Other">Other</option>
                                     </select>
                                 </div>
