@@ -45,10 +45,10 @@ export default function Login() {
                 {/* Header */}
                 <div className="text-center mb-8">
                     <h1 className="text-4xl font-bold text-primary-600 mb-2">
-                        Invigilation System
+                        IRS
                     </h1>
                     <p className="text-gray-600">
-                        Intelligent Exam Duty Management
+                        Invigilation Report System
                     </p>
                 </div>
 
@@ -136,7 +136,7 @@ export default function Login() {
 
                 {/* Footer */}
                 <p className="mt-8 text-center text-sm text-gray-600">
-                    Intelligent Invigilation Management System
+                    IRS - Invigilation Report System
                 </p>
             </div>
         </div>
