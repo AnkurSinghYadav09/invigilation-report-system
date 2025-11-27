@@ -56,7 +56,7 @@ export default function DutyCard({ duty, onMarkArrival, canMarkArrival = false }
         return now >= windowStart && now <= reportingDateTime;
     };
 
-    const showMarkButton = canMarkArrival && isWithinArrivalWindow() && status === 'pending';
+    const showMarkButton = canMarkArrival && isToday() && status === 'pending';
 
     console.log('DutyCard:', {
         exam: exam?.name,
