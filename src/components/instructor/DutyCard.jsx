@@ -87,7 +87,7 @@ export default function DutyCard({ duty, onMarkArrival, canMarkArrival = false }
                             <span className="font-medium">Exam End:</span> {formatTime(exam?.end_time || reporting_time)}
                         </p>
                         <p className="text-xs text-green-600 font-medium">
-                            ⏰ Arrive before {formatTime(exam?.start_time || reporting_time)} to be on time
+                            ⏰ Arrive before {getDeadlineTime(exam?.start_time || reporting_time, deadline_minutes)} to be on time
                         </p>
                         {arrival_time && (
                             <p>

@@ -6,13 +6,17 @@
 /**
  * Validates if an instructor arrived on time
  * 
- * Logic: Reporting Time = Exam Start Time
- * - On-time: Arrive BEFORE the exam start time
- * - Late: Arrive AT or AFTER the exam start time
+ * Logic: Must arrive before the deadline (exam start - buffer minutes)
+ * - On-time: Arrive BEFORE the deadline time
+ * - Late: Arrive AT or AFTER the deadline time
  * 
- * @param {string} reportingTime - Exam start time in HH:MM format (e.g., "09:00")
+ * Example: Exam at 1:00 PM, buffer 5 min → Deadline 12:55 PM
+ * - Arrive at 12:54 PM → ON TIME
+ * - Arrive at 12:55 PM or later → LATE
+ * 
+ * @param {string} reportingTime - Exam start time in HH:MM format (e.g., "13:00")
  * @param {Date} arrivalTime - Actual arrival timestamp
- * @param {number} deadlineMinutes - Unused, kept for compatibility
+ * @param {number} deadlineMinutes - Buffer minutes before exam start (default: 30)
  * @returns {'on-time' | 'late'} Status based on arrival
  */
 export function validateArrival(reportingTime, arrivalTime, deadlineMinutes = 30) {
@@ -23,9 +27,12 @@ export function validateArrival(reportingTime, arrivalTime, deadlineMinutes = 30
     const examStartTime = new Date(arrivalTime);
     examStartTime.setHours(hours, minutes, 0, 0);
 
-    // On-time: arrived BEFORE exam start
-    // Late: arrived AT or AFTER exam start
-    return arrivalTime < examStartTime ? 'on-time' : 'late';
+    // Calculate deadline (exam start - buffer minutes)
+    const deadline = new Date(examStartTime.getTime() - deadlineMinutes * 60 * 1000);
+
+    // On-time: arrived BEFORE deadline
+    // Late: arrived AT or AFTER deadline
+    return arrivalTime < deadline ? 'on-time' : 'late';
 }
 
 /**
