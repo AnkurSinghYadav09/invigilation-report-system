@@ -15,15 +15,14 @@ export function validateArrival(reportingTime, arrivalTime, deadlineMinutes = 30
     // Parse reporting time (format: "HH:MM")
     const [hours, minutes] = reportingTime.split(':').map(Number);
 
-    // Create a date object for today with the reporting time
-    const reporting = new Date();
+    // Create reporting time using the arrival date (not "today")
+    const reporting = new Date(arrivalTime);
     reporting.setHours(hours, minutes, 0, 0);
 
-    // Calculate deadline (configurable minutes before reporting time)
-    const deadline = new Date(reporting.getTime() - deadlineMinutes * 60 * 1000);
-
-    // Compare arrival time with deadline
-    return arrivalTime <= deadline ? 'on-time' : 'late';
+    // Compare arrival with reporting time
+    // On-time: arrived at or before reporting time
+    // Late: arrived after reporting time
+    return arrivalTime <= reporting ? 'on-time' : 'late';
 }
 
 /**
