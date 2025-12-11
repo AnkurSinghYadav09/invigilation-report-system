@@ -37,9 +37,12 @@ export function useInstructors() {
     const createInstructor = async (instructorData) => {
         try {
             console.log('Creating instructor:', instructorData);
+
             const { data, error: insertError } = await supabase
                 .from('instructors')
-                .insert([instructorData]);
+                .insert([instructorData])
+                .select()
+                .single();
 
             if (insertError) {
                 console.error('Supabase insert error:', insertError);
@@ -47,6 +50,17 @@ export function useInstructors() {
             }
 
             console.log('Instructor created successfully:', data);
+
+            // Show success message with linking information
+            alert(
+                `✅ Instructor created successfully!\n\n` +
+                `Email: ${instructorData.email}\n\n` +
+                `📝 Next Steps:\n` +
+                `• If they already have an account, they should logout and login again\n` +
+                `• If they don't have an account yet, they should sign up with this email\n` +
+                `• Their account will be automatically linked when they sign up/login`
+            );
+
             await fetchInstructors();
             return { success: true };
         } catch (err) {
